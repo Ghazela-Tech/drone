@@ -1,0 +1,24 @@
+---
+kind: pipeline
+type: kubernetes
+name: default
+
+steps:
+- name: Compile
+  image: maven:3.8-jdk-11-slim
+  commands:
+  - mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
+- name: Build-Image
+  image: plugins/docker
+  settings:
+    repo: issaouib/droneci
+    tags: [ "${DRONE_COMMIT_SHA:0:7}","latest" ]
+    username:
+      from_secret: docker-username
+    password:
+      from_secret: docker-password
+
+
+
+
